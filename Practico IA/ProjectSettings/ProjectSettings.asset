@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 14
-  productGUID: 3fb7c22b99f16ac4c9b805451823f4d7
+  productGUID: 9e80d20475fe6de43b58adc53ed3c0e8
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   defaultScreenOrientation: 4
@@ -12,7 +12,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: IA Tp
+  productName: Practico IA
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -554,22 +554,17 @@ PlayerSettings:
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
-<<<<<<< HEAD
   apiCompatibilityLevelPerPlatform: {}
-=======
-  apiCompatibilityLevelPerPlatform:
-    Standalone: 3
->>>>>>> f2228217b9006e5e964e8bf7b84564e25137eb62
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: IA Tp
+  metroPackageName: Practico IA
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: IA Tp
+  metroApplicationDescription: Practico IA
   wsaImages: {}
   metroTileShortName: 
   metroCommandLineArgsFile: 
@@ -634,13 +629,12 @@ PlayerSettings:
     daydream:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
-  cloudServicesEnabled:
-    UNet: 1
-  facebookSdkVersion: 7.9.4
+  cloudServicesEnabled: {}
+  facebookSdkVersion: 
   apiCompatibilityLevel: 2
-  cloudProjectId: ee3bd3ec-b7c5-4499-a16b-302fe661bc10
-  projectName: IA Tp
-  organizationId: gaston_santamaria
+  cloudProjectId: 
+  projectName: 
+  organizationId: 
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0

@@ -17,15 +17,14 @@ public class Hero : MonoBehaviour, IUpdateble
 
     void Start()
     {
-<<<<<<< HEAD:Practico IA/Assets/Scripts/Hero.cs
+
         StartUpdating();
-=======
+
         // Agrego a la lista de los actualizables
         UpdateManager.AddObjectUpdateable(this);
 
         //deb example
         Deb = "hola";
->>>>>>> f2228217b9006e5e964e8bf7b84564e25137eb62:Practico IA/Assets/Hero.cs
 
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
@@ -46,11 +45,10 @@ public class Hero : MonoBehaviour, IUpdateble
     // Nuevo update para los actualizables
     public void OnUpdate()
     {
-<<<<<<< HEAD:Practico IA/Assets/Scripts/Hero.cs
+
         RotatePlayerWithCamera();
-=======
         
->>>>>>> f2228217b9006e5e964e8bf7b84564e25137eb62:Practico IA/Assets/Hero.cs
+
     }
 
     public void StopUpdating()
@@ -59,7 +57,6 @@ public class Hero : MonoBehaviour, IUpdateble
         UpdateManager.RemoveObjectUpdateable(this);
     }
 
-<<<<<<< HEAD:Practico IA/Assets/Scripts/Hero.cs
     void RotatePlayerWithCamera()
     {
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * cameraSpeedRotation, Space.World);
@@ -79,9 +76,9 @@ public class Hero : MonoBehaviour, IUpdateble
         velocityChange.y = 0;
         _rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }
-=======
+
     /// <summary> No modificar esta variable, pera debugear, hacerlo con Deb </summary>
     [Header("Solo para debug")][SerializeField] Text deb_Estado;
     string Deb { set { deb_Estado.text = value; } }
->>>>>>> f2228217b9006e5e964e8bf7b84564e25137eb62:Practico IA/Assets/Hero.cs
+
 }
