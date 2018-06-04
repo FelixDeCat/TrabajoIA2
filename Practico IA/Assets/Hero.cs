@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using IA2;
 
 public class Hero : MonoBehaviour, IUpdateble
 {
@@ -10,11 +12,16 @@ public class Hero : MonoBehaviour, IUpdateble
     public float cameraSpeedRotation;
     Rigidbody _rb;
 
+    
+
+
     void Start()
     {
         // Agrego a la lista de los actualizables
         UpdateManager.AddObjectUpdateable(this);
 
+        //deb example
+        Deb = "hola";
 
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
@@ -33,15 +40,16 @@ public class Hero : MonoBehaviour, IUpdateble
 
     void Move()
     {
-
+        
     }
-
-    
 
     public void StopUpdating()
     {
         // Saco de las lista de actualizables y deja de actualizarse
         UpdateManager.RemoveObjectUpdateable(this);
     }
-         
+
+    /// <summary> No modificar esta variable, pera debugear, hacerlo con Deb </summary>
+    [Header("Solo para debug")][SerializeField] Text deb_Estado;
+    string Deb { set { deb_Estado.text = value; } }
 }
