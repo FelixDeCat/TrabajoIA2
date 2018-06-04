@@ -12,12 +12,8 @@ public class Hero : MonoBehaviour, IUpdateble
     public float cameraSpeedRotation;
     Rigidbody _rb;
 
-    
-
-
     void Start()
     {
-
         StartUpdating();
 
         // Agrego a la lista de los actualizables
@@ -45,10 +41,7 @@ public class Hero : MonoBehaviour, IUpdateble
     // Nuevo update para los actualizables
     public void OnUpdate()
     {
-
         RotatePlayerWithCamera();
-        
-
     }
 
     public void StopUpdating()
@@ -78,7 +71,7 @@ public class Hero : MonoBehaviour, IUpdateble
     }
 
     /// <summary> No modificar esta variable, pera debugear, hacerlo con Deb </summary>
-    [Header("Solo para debug")][SerializeField] Text deb_Estado;
+    [Header("Solo para debug")] [SerializeField] Text deb_Estado;
     string Deb { set { deb_Estado.text = value; } }
 
 }
