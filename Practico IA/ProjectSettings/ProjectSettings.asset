@@ -554,7 +554,12 @@ PlayerSettings:
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
+<<<<<<< HEAD
   apiCompatibilityLevelPerPlatform: {}
+=======
+  apiCompatibilityLevelPerPlatform:
+    Standalone: 3
+>>>>>>> f2228217b9006e5e964e8bf7b84564e25137eb62
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: IA Tp
@@ -624,7 +629,6 @@ PlayerSettings:
   XboxOneSplashScreen: {fileID: 0}
   XboxOneAllowedProductIds: []
   XboxOnePersistentLocalStorageSize: 0
-  XboxOneXTitleMemory: 8
   xboxOneScriptCompiler: 0
   vrEditorSettings:
     daydream:
