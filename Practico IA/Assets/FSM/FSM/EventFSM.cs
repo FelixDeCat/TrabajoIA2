@@ -17,11 +17,11 @@ namespace IA2 {
 
 		public State<T> Current { get { return current; } }
 
-		public void Update() {
-			current.Update();
+		public void Update() { current.Update();
+			
 		}
-        publvoid LateUpdate() { current.LateUpdate(); }
-        public void FixedUpdate() { current.FixedUpdate(); }
+                public void LateUpdate() { current.LateUpdate(); }
+                public void FixedUpdate() { current.FixedUpdate(); }
 	
         }
 }
