@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  jumpForce: 2
+  maxVel: 20
   cameraSpeedRotation: 2
 --- !u!1 &989942696
 GameObject:
