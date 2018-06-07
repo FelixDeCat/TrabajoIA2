@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Obstacle : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class Obstacle : MonoBehaviour {
     private void Awake()
     {
         this.gameObject.tag = "Floor";
+        transform.GetComponentsInChildren<Transform>().ToList().ForEach(x => x.gameObject.tag = "Floor");
     }
 
     public bool IsJumpeable {
@@ -26,7 +28,7 @@ public class Obstacle : MonoBehaviour {
     public bool IsCroucheable {
         set {
             Vector3 pos = transform.position;
-            pos.y = value ? 1 : 0;
+            pos.y = value ? 1 : -0.5f;
             transform.position = pos;
         }
         get { return transform.position.y >= pos_Croucheable; }

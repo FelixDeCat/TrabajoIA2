@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using IA2;
 using System.Linq;
 
+//IA2-P3
 public class Hero : MonoBehaviour, IUpdateble
 {
     public float cameraSpeedRotation;
