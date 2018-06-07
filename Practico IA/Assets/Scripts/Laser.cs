@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Laser : MonoBehaviour
 {
@@ -8,20 +9,26 @@ public class Laser : MonoBehaviour
     public float lifeSpan;
     private float _tick;
     private bool _alive;
-    public GameObject spawner;
-    
+    public Transform spawner;
+
+    private void Awake()
+    {
+        spawner = GameObject.FindObjectsOfType<Hero>().First().spawnBullets;
+    }
+
 
     void Update()
     {
         _tick += Time.deltaTime;
         if (_tick >= lifeSpan) DisposeLaser(this);
-        else    transform.position += transform.forward * speed;
+        else transform.position += transform.forward * speed;
     }
 
     public void Initialize()
     {
         _tick = 0;
-        transform.position = spawner.transform.position;
+        transform.position = spawner.position;
+        transform.forward = spawner.forward;
     }
 
     public void Dispose()

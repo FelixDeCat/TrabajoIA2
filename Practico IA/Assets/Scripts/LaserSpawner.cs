@@ -20,7 +20,7 @@ public class LaserSpawner : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown(PHYSICAL_INPUT.FIRE1) || Input.GetKeyDown(KeyCode.E))
         {
             _bulletPool.GetObjectFromPool();
         }

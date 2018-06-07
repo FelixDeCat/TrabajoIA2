@@ -17,10 +17,10 @@ public class Personaje : MonoBehaviour
         //PARTE 1: SETEO INICIAL
 
         //Creo los estados
-        var idle = new State<PlayerInputs>("IDLE");
-        var moving = new State<PlayerInputs>("Moving");
-        var jumping = new State<PlayerInputs>("Jumping");
-        var die = new State<PlayerInputs>("DIE");
+        var idle = new State<PlayerInputs>(CommonState.IDLE);
+        var moving = new State<PlayerInputs>(CommonState.MOVING);
+        var jumping = new State<PlayerInputs>(CommonState.JUMPING);
+        var die = new State<PlayerInputs>(CommonState.DIE);
 
         //creo las transiciones
         StateConfigurer.Create(idle)

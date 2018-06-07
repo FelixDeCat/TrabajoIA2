@@ -441,14 +441,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 198024}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a8508b0cdb9b2a4ba78ebdc0621b52e, type: 3}
+  m_Script: {fileID: 11500000, guid: e33576a7c78c1a24ca624951c66e19b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lblNumber: {fileID: 10287102}
-  lblId: {fileID: 10250584}
-  body: {fileID: 449198}
-  inventory: {fileID: 400908}
-  InitialId: 
+  _myRen: {fileID: 2359608}
 --- !u!135 &13566778
 SphereCollider:
   m_ObjectHideFlags: 1
