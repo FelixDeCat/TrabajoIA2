@@ -15,10 +15,7 @@ public class Hero : MonoBehaviour, IUpdateble
     void Start()
     {
         StartUpdating();
-
-        // Agrego a la lista de los actualizables
-        UpdateManager.AddObjectUpdateable(this);
-
+        
         //deb example
         Deb = "hola";
 
