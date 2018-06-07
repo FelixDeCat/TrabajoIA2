@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using IA2;
+using System.Linq;
 
 public class Hero : MonoBehaviour, IUpdateble
 {
     public float cameraSpeedRotation;
     Rigidbody _rb;
+
+    public Queries querie;
 
     public Transform spawnBullets;
 
@@ -34,6 +37,9 @@ public class Hero : MonoBehaviour, IUpdateble
     {
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
+
+        querie = GetComponent<Queries>();
+        querie.isBox = false;
 
         StateMachine();
     }
@@ -238,6 +244,7 @@ public class Hero : MonoBehaviour, IUpdateble
     public void OnUpdate()
     {
         _myFsm.Update();
+        UpdateQueries();
         RotatePlayerWithCamera();
     }
     private void FixedUpdate()
@@ -295,5 +302,16 @@ public class Hero : MonoBehaviour, IUpdateble
     Text deb_Estado; string Deb_Est { set { deb_Estado.text = value; Debug.Log("ESTADO: " + value); } }
     [SerializeField]
     Text deb_Trans; string Deb_Trans { set { deb_Trans.text = value; } }
+    [SerializeField]
+    Text deb_Queries; object Deb_Queries { set { deb_Queries.text = value.ToString(); } }
 
+
+    //////////////////////////////////////////////////////
+    // FOR UPDATE QUERIES
+    //////////////////////////////////////////////////////
+    void UpdateQueries()
+    {
+        var gridEntities = querie.Query().ToList();
+        Deb_Queries = gridEntities.Count;
+    }
 }
