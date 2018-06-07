@@ -312,7 +312,9 @@ public class Hero : MonoBehaviour, IUpdateble
     //////////////////////////////////////////////////////
     void UpdateQueries()
     {
-        var gridEntities = querie.Query().ToList();
+        var gridEntities = querie.Query()
+            .Where(x => x.gameObject.GetComponent<Enemy>() != null)
+            .Select(x => x.GetComponent<Enemy>()).ToList();
         Deb_Queries = gridEntities.Count;
     }
 }

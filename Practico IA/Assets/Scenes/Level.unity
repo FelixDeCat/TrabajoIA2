@@ -9351,6 +9351,7 @@ GameObject:
   - component: {fileID: 939461494}
   - component: {fileID: 939461496}
   - component: {fileID: 939461497}
+  - component: {fileID: 939461498}
   m_Layer: 0
   m_Name: Hero
   m_TagString: Untagged
@@ -9427,6 +9428,19 @@ MonoBehaviour:
   targetGrid: {fileID: 2004875345}
   width: 15
   height: 30
+--- !u!114 &939461498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 939461493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3405ef3764892f4fbf793bce37db29f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myHero: {fileID: 0}
+  myQueries: {fileID: 0}
 --- !u!4 &939461499
 Transform:
   m_ObjectHideFlags: 0
@@ -20217,6 +20231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4402393db175be240b6a385e659d5b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemigos: []
 --- !u!1 &2009767029
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,11 @@ public class HeroQueriesActions : MonoBehaviour {
     public Hero myHero;
     public Queries myQueries;
 
+    private void Awake()
+    {
+
+    }
+
 
     public void Button_Kill_The_Weak_Entities()
     {
