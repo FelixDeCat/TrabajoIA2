@@ -53,6 +53,8 @@ public class SpatialGrid : MonoBehaviour
             .Select(x => x.GetComponent<GridEntity>())
             .Where(x => x != null);
 
+        ents.RandomizePositions(x, z, width, height,cellWidth, cellHeight);
+
         foreach (var e in ents)
         {
             e.OnMove += UpdateEntity;
@@ -241,4 +243,18 @@ public class SpatialGrid : MonoBehaviour
         showLogs = false;
     }
     #endregion
+
+
+    
+}
+
+public static class someextensions
+{
+    public static IEnumerable<GridEntity> RandomizePositions(this IEnumerable<GridEntity> col, float xpos, float zpos, float width, float heigth, float cellWidth, float cellheigth)
+    {
+        var randomizada = col.ToList();
+            randomizada.ForEach(x => x.transform.position = new Vector3(UnityEngine.Random.Range(0, width*cellWidth), 0, UnityEngine.Random.Range(0, heigth*cellheigth)));
+
+        return randomizada;
+    }
 }
