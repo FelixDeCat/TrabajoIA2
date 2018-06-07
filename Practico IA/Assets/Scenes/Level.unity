@@ -1090,7 +1090,8 @@ MonoBehaviour:
     El movimiento lo volv\xED a cambiar porque se me complicaba para meterlo en la
     state machine.\r\n- Se puede combinar Jump + Crouch para hacer Caida Mas contundente,
     Con particulas\r\n- Se puede combinar Movimiento + Crouch para Rodar (No hay nada
-    visual, pero esta)\n\nCuando me despierte le doy duro a la state machine del Enemy\nSaludos..."
+    visual, pero esta)\n- para agregar plataformas saltables estas tienen que tener
+    un TAG (Floor)\n\nCuando me despierte le doy duro a la state machine del Enemy\nSaludos..."
 --- !u!222 &741828261
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1435,14 +1436,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e04b5b8891f51d644ac87984581a21f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxVel: 20
   cameraSpeedRotation: 2
   spawnBullets: {fileID: 859502777}
-  particles_JumpFall: {fileID: 1482693412}
   gravity: 0.75
   jumpForce: 10
   moveFall: {x: 0, y: 0, z: 0}
   check: {fileID: 1188353895}
+  particles_JumpFall: {fileID: 1482693412}
   speed: 5
   deb_Estado: {fileID: 166143605}
   deb_Trans: {fileID: 520419279}
@@ -2354,7 +2354,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -10}
-  m_SizeDelta: {x: 707.7, y: 196.8}
+  m_SizeDelta: {x: 707.7, y: 213.8}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1763670519
 MonoBehaviour:
