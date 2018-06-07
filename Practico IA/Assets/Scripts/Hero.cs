@@ -7,7 +7,6 @@ using IA2;
 
 public class Hero : MonoBehaviour, IUpdateble
 {
-    public float maxVel;
     public float cameraSpeedRotation;
     Rigidbody _rb;
 
@@ -16,9 +15,6 @@ public class Hero : MonoBehaviour, IUpdateble
     public enum PlayerInputs { MOVE, JUMP, IDLE, DIE, CROUCH }
     private EventFSM<PlayerInputs> _myFsm;
 
-    bool isJumpFall;
-    public ParticleSystem particles_JumpFall;
-
     [Header("Salto")]
     public float gravity = 0.75f;
     public float jumpForce = 5f;
@@ -26,6 +22,8 @@ public class Hero : MonoBehaviour, IUpdateble
     public Vector3 moveFall;
     float inputJump;
     public CheckIsGrounded check;
+    bool isJumpFall;
+    public ParticleSystem particles_JumpFall;
 
     [Header("Movimiento")]
     public float speed;
@@ -37,6 +35,20 @@ public class Hero : MonoBehaviour, IUpdateble
         _rb = GetComponent<Rigidbody>();
         _rb.freezeRotation = true;
 
+        StateMachine();
+    }
+
+    void Start()
+    {
+        AddListUpdateables();
+    }
+
+    //////////////////////////////////////////////////////
+    // STATE MACHINE
+    //////////////////////////////////////////////////////
+
+    void StateMachine()
+    {
         #region STATE MACHINE CONFIGS
 
         var idle = new State<PlayerInputs>(CommonState.IDLE);
@@ -74,7 +86,6 @@ public class Hero : MonoBehaviour, IUpdateble
             .Done();
 
         #endregion
-
         #region STATE MACHINE DO SOMETING
 
         // <IDLE>
@@ -213,58 +224,13 @@ public class Hero : MonoBehaviour, IUpdateble
         // </CROUCH>
 
         #endregion
-
         _myFsm = new EventFSM<PlayerInputs>(idle);
     }
 
-    void Start()
-    {
-        AddListUpdateables();
-    }
+    //////////////////////////////////////////////////////
+    // UPDATES AND INPUT_SENDERS
+    //////////////////////////////////////////////////////
 
-    public void AddListUpdateables() { UpdateManager.AddObjectUpdateable(this); }
-
-
-    public void StopUpdating()
-    {
-        // Saco de las lista de actualizables y deja de actualizarse
-        UpdateManager.RemoveObjectUpdateable(this);
-    }
-
-
-
-    public void Jump()
-    {
-        //inputJump = Input.GetAxisRaw("Jump");
-        //if (inputJump > 0 && check.isGrounded) { moveFall.y = jumpForce; }
-        //else if (inputJump == 0 && check.isGrounded) { moveFall.y = 0; }
-        //else { moveFall.y -= gravity; }
-
-        if (GoToJump && check.IsGrounded) { moveFall.y = jumpForce; GoToJump = false; }
-        else if (!GoToJump && check.IsGrounded) { moveFall.y = 0; }
-        else { moveFall.y -= gravity; }
-    }
-
-    //// Move Viejo
-    //Vector2 dir = new Vector2();
-    //Vector3 targetVelocity = new Vector3();
-    //void Move()
-    //{
-    //    dir.x = Input.GetAxis(PHYSICAL_INPUT.HORIZONTAL);
-    //    dir.y = Input.GetAxis(PHYSICAL_INPUT.VERTICAL);
-    //    targetVelocity.x = dir.x;
-    //    targetVelocity.y = dir.y;
-
-    //    targetVelocity = transform.TransformDirection(targetVelocity);
-    //    targetVelocity *= speed;
-
-    //    Vector3 velocity = _rb.velocity;
-    //    Vector3 velocityChange = (targetVelocity - velocity);
-    //    velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVel, maxVel);
-    //    velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVel, maxVel);
-    //    velocityChange.y = 0;
-    //    _rb.AddForce(velocityChange, ForceMode.VelocityChange);
-    //}
     private void SendInputToFSM(PlayerInputs inp)
     {
         _myFsm.SendInput(inp);
@@ -279,6 +245,15 @@ public class Hero : MonoBehaviour, IUpdateble
         _myFsm.FixedUpdate();
         ConstantVelocity();
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        //SendInputToFSM(PlayerInputs.IDLE);
+    }
+
+    //////////////////////////////////////////////////////
+    // FOR MOVE AND JUMP
+    //////////////////////////////////////////////////////
+
     void StateStill()
     {
         if (!check.IsGrounded) moveFall.y -= gravity;
@@ -303,11 +278,18 @@ public class Hero : MonoBehaviour, IUpdateble
         Vector3 movement = movehorizontal + movevertical + moveFall;
         _rb.velocity = movement;
     }
-    private void OnCollisionEnter(Collision collision)
-    {
-        //SendInputToFSM(PlayerInputs.IDLE);
-    }
-    /// <summary> No modificar esta variable, pera debugear, hacerlo con Deb </summary>
+
+    //////////////////////////////////////////////////////
+    // FOR UPDATE MANAGER
+    //////////////////////////////////////////////////////
+
+    public void AddListUpdateables() { UpdateManager.AddObjectUpdateable(this); }
+    public void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
+
+    //////////////////////////////////////////////////////
+    // FOR DEBUGGING
+    //////////////////////////////////////////////////////
+
     [Header("Solo para debug")]
     [SerializeField]
     Text deb_Estado; string Deb_Est { set { deb_Estado.text = value; Debug.Log("ESTADO: " + value); } }
