@@ -31,10 +31,10 @@ public class Queries : MonoBehaviour
             return targetGrid.Query(
                 transform.position + new Vector3(-radius, 0, -radius),
                 transform.position + new Vector3(radius, 0, radius),
-                x => {
-                    var position2d = x - transform.position;
-                    position2d.y = 0;
-                    return position2d.sqrMagnitude < radius * radius;
+                x => { //o sea X seria la posicion del GridEntity que estoy checkeando
+                    var position2d = x - transform.position; // obtengo el vector direccion entre el grid entity y mi posicion, o sea seria un vector que apunta desde (0,0) hasta la posicion del GridEntity que estoy checkeando
+                    position2d.y = 0; //este eje no lo usamos
+                    return position2d.sqrMagnitude < radius * radius; //de mi vector normalizado obtengo la distancia, y si esa distancia es menor al radio entonces cumple.
                 });
         }
     }

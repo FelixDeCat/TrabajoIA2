@@ -83,6 +83,7 @@ public class SpatialGrid : MonoBehaviour
             lastPositions.Remove(entity);
     }
 
+    //obtiene un Ienumerable de GridEntity que estan entre from y to... ademas como ultimo checkeo filtra las que cumplen con la condicion de la funcion
     public IEnumerable<GridEntity> Query(Vector3 aabbFrom, Vector3 aabbTo, Func<Vector3, bool> filterByPosition)
     {
         var from = new Vector3(Mathf.Min(aabbFrom.x, aabbTo.x), 0, Mathf.Min(aabbFrom.z, aabbTo.z));
@@ -116,10 +117,10 @@ public class SpatialGrid : MonoBehaviour
 
         // Iteramos las que queden dentro del criterio
         return cells
-            .SelectMany(cell => buckets[cell.Item1, cell.Item2])
-            .Where(e =>
+            .SelectMany(cell => buckets[cell.Item1, cell.Item2])//por cada tupla de <int,int> que corresponda a la key del bucket obtengo el GridEntity
+            .Where(e =>//ahora si recorro todos los GridEntity que estan dentro de las cells
                 from.x <= e.transform.position.x && e.transform.position.x <= to.x &&
-                from.z <= e.transform.position.z && e.transform.position.z <= to.z
+                from.z <= e.transform.position.z && e.transform.position.z <= to.z //o sea, si mi posicion(GridEntity) esta dentro del from y del to, cumple y lo tomo
             ).Where(x => filterByPosition(x.transform.position));
     }
 
