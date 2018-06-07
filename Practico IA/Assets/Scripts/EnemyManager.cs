@@ -10,7 +10,7 @@ public class EnemyManager : MonoBehaviour {
     List<GridEntity> AllEntities;
 
     List<Obstacle> obstaculos = new List<Obstacle>();
-    public List<EnemySuicider> enemigos = new List<EnemySuicider>();
+    public List<Enemy> enemigos = new List<Enemy>();
 
 
     private void Awake()
@@ -24,8 +24,8 @@ public class EnemyManager : MonoBehaviour {
             .Select(x => x.GetComponent<Obstacle>()).ToList();
 
         enemigos = AllEntities
-            .Where(x => x.GetComponent<EnemySuicider>() != null)
-            .Select(x => x.GetComponent<EnemySuicider>()).ToList();
+            .Where(x => x.GetComponent<Enemy>() != null)
+            .Select(x => x.GetComponent<Enemy>()).ToList();
     }
 
     private void Start()
