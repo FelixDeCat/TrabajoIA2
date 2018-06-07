@@ -31,25 +31,15 @@ public class Laser : MonoBehaviour
         transform.forward = spawner.forward;
     }
 
-    public void Dispose()
-    {
-     
-    }
+    public void Dispose() {  }
 
-    /// <summary>
-    /// Funcion Static para que podamos acceder desde el LaserSpawner,y que se encarga de Activar el GameObject(en caso de serlo) y llama a su funcion inicial
-    /// </summary>
-    /// <param name="bulletObj"></param>
+    /// <summary> Funcion Static para que podamos acceder desde el LaserSpawner,y que se encarga de Activar el GameObject(en caso de serlo) y llama a su funcion inicial </summary>
     public static void InitializeLaser(Laser bulletObj)
     {
         bulletObj.gameObject.SetActive(true);
         bulletObj.Initialize();
     }
-
-    /// <summary>
-    ///  Funcion Static para que podamos acceder desde el LaserSpawner,y que se encarga de Desactivar el GameObject(en caso de serlo) y llama a su funcion Dispose
-    /// </summary>
-    /// <param name="bulletObj"></param>
+    /// <summary> Funcion Static para que podamos acceder desde el LaserSpawner,y que se encarga de Desactivar el GameObject(en caso de serlo) y llama a su funcion Dispose </summary>
     public static void DisposeLaser(Laser bulletObj)
     {
         bulletObj.Dispose();

@@ -49,9 +49,8 @@ public class SpatialGrid : MonoBehaviour
                 buckets[i, j] = new HashSet<GridEntity>();
 
         //P/alumnos: por que no puedo usar OfType<>() despues del RecursiveWalker() aca?
-        var ents = RecursiveWalker(transform)
-            .Select(x => x.GetComponent<GridEntity>())
-            .Where(x => x != null);
+
+        var ents = GetEntities();
 
         ents.RandomizePositions(x, z, width, height,cellWidth, cellHeight);
 
@@ -60,6 +59,13 @@ public class SpatialGrid : MonoBehaviour
             e.OnMove += UpdateEntity;
             UpdateEntity(e);
         }
+    }
+
+    public IEnumerable<GridEntity> GetEntities()
+    {
+        return RecursiveWalker(transform)
+                    .Select(x => x.GetComponent<GridEntity>())
+                    .Where(x => x != null);
     }
 
     public void UpdateEntity(GridEntity entity)
