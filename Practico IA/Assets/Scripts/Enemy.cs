@@ -7,34 +7,19 @@ using IA2;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    [Header ("For Eject")]
-    public float feedbackHit;
 
-    
-=======
-=======
-
-    
+    [Header ("For Line of Sight")]
+    GameObject target;
+    public float viewDistance;
+    public float viewAngle;
 
     [Header ("For Eject")]
     public float feedbackHit;
 
     [Header ("Show Gizmos")]
     public bool DrawGizmos;
->>>>>>> parent of 403c045... Arreglo State Machine
 
-    
-
-    [Header ("For Eject")]
-    public float feedbackHit;
-
-    [Header ("Show Gizmos")]
-    public bool DrawGizmos;
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-
-    float life; public float Life { get { return life; } }
+    int life; public int Life { get { return life; } }
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
@@ -42,7 +27,13 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer Render { get { return myRender; } }
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-    
+    bool canMove = true;
+    Rigidbody _rb;
+    Vector3 _directionToTarget;
+    public float rotationSpeed;
+    float _angleToTarget;
+    float _distanceToTarget;
+    bool _playerInSight;
 
     protected virtual void Awake()
     {
@@ -52,18 +43,12 @@ public class Enemy : MonoBehaviour, IUpdateble
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     protected virtual void Start()
     {
         StartUpdating();
         StateMachine();
     }
 
-<<<<<<< HEAD
-=======
     public void Scare()
     {
         myRender.material.color = Color.grey;
@@ -81,13 +66,12 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _rb.AddExplosionForce(5000, transform.position, 1);
     }
-    public void TakeDamage(float damage)
+    public void TakeDamage(int damage)
     {
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
 
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
     void StateMachine()
@@ -106,35 +90,30 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateConfigurer.Create(idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
             .SetTransition(PlayerInputs.DIE, die)
-            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(onSigth)
             .SetTransition(PlayerInputs.PROBOCATED, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
-            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
             .SetTransition(PlayerInputs.DIE, die)
-            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(searching)
             .SetTransition(PlayerInputs.TIME_OUT, idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, pursuit)
             .SetTransition(PlayerInputs.DIE, die)
-            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(attack)
             .SetTransition(PlayerInputs.OUT_RANGE_TO_ATTACK, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
-            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(freeze)
@@ -156,31 +135,13 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** IDLE
         //******************
         idle.OnUpdate += () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "IDLE";
-            if (LineOfSight()) {
-                Debug.Log("Line of sigth");
-                SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT); }
-=======
             if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
-            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
->>>>>>> parent of 403c045... Arreglo State Machine
         };
 
         //******************
         //*** ON SIGHT
         //******************
         onSigth.OnUpdate += () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "ON SIGTH";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
             if (LineOfSight()) OnSight_CountDownForProbocate();
             else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
         };
@@ -189,17 +150,8 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** PURSUIT
         //******************
         pursuit.OnUpdate += () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "PURSUIT";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
             if (LineOfSight())
             {
-                FollowPlayer();
-
                 if (IsInDistanceToAttack())
                 {
                     SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
@@ -212,68 +164,14 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** SEARCH
         //******************
         searching.OnUpdate += () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "SEARCH";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
-            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
-            else {
-                OutSight_CountDownForIgnore();
+            if (LineOfSight())
+            {
+                if (IsInDistanceToAttack())
+                {
+                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
+                }
             }
-        };
-
-        //******************
-        //*** ATTACK
-        //******************
-        attack.OnUpdate += () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "ATTACK";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
-            if (LineOfSight()) {
-                if (IsInDistanceToAttack()) Attack();
-                else SendInputToFSM(PlayerInputs.OUT_RANGE_TO_ATTACK);
-            }
-            else SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT);
-        };
-
-        //******************
-        //*** FREEZE
-        //******************
-        freeze.OnEnter += x => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "FREEZE";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
-            myRender.material.color = Color.grey;
-            canMove = false;
-        };
-
-        //******************
-        //*** DEATH
-        //******************
-        die.OnEnter += x => {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Deb_Estado = "DEATH";
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
-            canMove = false;
-            if (myRender.material.color == Color.black) return;
-            myRender.material.color = Color.black;
-            transform.localScale = transform.localScale / 2;
-            StopUpdating();
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
         };
 
         ///////////////////////////////////////////////////////////////
@@ -298,27 +196,29 @@ public class Enemy : MonoBehaviour, IUpdateble
         return Vector3.Distance(transform.position, target.transform.position) < minDisToAttack;
     }
 
-    [Header ("For Ignore in Time Out")]
-    public float TimeToIgnore = 5f;
-    float _timer_to_ignore;
+    public float Time_to_ignore = 5f;
+    float timer_to_ignore;
     void OutSight_CountDownForIgnore()
     {
-        if (_timer_to_ignore < TimeToIgnore) _timer_to_ignore = _timer_to_ignore + 1 * Time.deltaTime;
-        else { _timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
+        if (timer_to_ignore < Time_to_ignore) timer_to_ignore = timer_to_ignore + 1 * Time.deltaTime;
+        else { timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
     }
-    
-    [Header("For Line of Sight")]
-    public float viewDistance;
-    public float viewAngle;
-    GameObject target;
-    protected virtual bool LineOfSight()
+
+    private void SendInputToFSM(PlayerInputs inp)
     {
+        _myFsm.SendInput(inp);
+    }
+    private void FixedUpdate()
+    {
+        _myFsm.FixedUpdate();
+    }
+
+    protected virtual bool LineOfSight() {
         //si no me puedo mover... al pedo calcular lo demas
         if (!canMove) return false;
 
         _distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-        if (_distanceToTarget > viewDistance)
-        {
+        if (_distanceToTarget > viewDistance) {
             return false;
         }
         _directionToTarget = (target.transform.position - transform.position).normalized;
@@ -334,111 +234,22 @@ public class Enemy : MonoBehaviour, IUpdateble
         }
         else return false;
     }
-
-    [Header("For Pursuit")]
-    public float rotationSpeed;
-    bool canMove = true;
-    Rigidbody _rb;
-    Vector3 _directionToTarget;
-    float _angleToTarget;
-    float _distanceToTarget;
-    bool _playerInSight;
     protected virtual void FollowPlayer()
     {
         if (!canMove) return;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         if (!_playerInSight) return;
 
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
-        if (!_playerInSight) return;
-
->>>>>>> parent of 403c045... Arreglo State Machine
         float velY = _rb.velocity.y;
         _rb.velocity = new Vector3(_directionToTarget.x, _directionToTarget.y + velY, _directionToTarget.z);
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
     }
-
-    void Attack()
-    {
-        Debug.Log( "I'm attacking you (" + target.name + ")");
-    }
-
-<<<<<<< HEAD
-    public void Scare()
-    {
-        myRender.material.color = Color.grey;
-        canMove = false;
-    }
-    public void Death()
-    {
-        if (myRender.material.color == Color.black) return;
-
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
-    public void TakeDamage(float damage)
-=======
-   
-    public void TakeDamage(int damage)
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-    {
-        life -= damage;
-        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
-    }
-
-    private void SendInputToFSM(PlayerInputs inp)
-    {
-        _myFsm.SendInput(inp);
-    }
-    private void FixedUpdate()
-    {
-        _myFsm.FixedUpdate();
-    }
-
-    
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    
-    public virtual void OnUpdate()
-    {
-        _myFsm.Update();
-        //LineOfSight();
-        //FollowPlayer();
-        if (life <= 0) Death();
-    }
-
-
-    [Header("Gizmos & Feedback")]
-    public bool DrawGizmos;
-    [SerializeField] TextMesh debug_estado; public object Deb_Estado { set { debug_estado.text = value.ToString(); } }
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
     protected virtual void OnDrawGizmos()
     {
         if (!DrawGizmos) return;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        target = FindObjectOfType<Hero>().gameObject;
-
-=======
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
         if (_playerInSight)
             Gizmos.color = Color.green;
         else
@@ -457,11 +268,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         Vector3 leftLimit = Quaternion.AngleAxis(-viewAngle, transform.up) * transform.forward;
         Gizmos.DrawLine(transform.position, transform.position + (leftLimit * viewDistance));
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
     public virtual void OnUpdate()
     {
         _myFsm.Update();
@@ -469,8 +275,4 @@ public class Enemy : MonoBehaviour, IUpdateble
         //FollowPlayer();
         if (life <= 0) Death();
     }
-<<<<<<< HEAD
->>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
-=======
->>>>>>> parent of 403c045... Arreglo State Machine
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class EnemyShooter : Enemy
 {
+
     protected override void Awake()
     {
         base.Awake();
