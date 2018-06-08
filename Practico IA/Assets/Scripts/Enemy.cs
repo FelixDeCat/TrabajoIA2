@@ -21,6 +21,19 @@ public class Enemy : MonoBehaviour, IUpdateble
     Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+
+    public void Death()
+    {
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+    }
+
+    bool canMove = true;
     private Rigidbody _rb;
     private Vector3 _directionToTarget;
     private float _angleToTarget;
@@ -32,7 +45,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         _rb = GetComponent<Rigidbody>();
         myRender = GetComponent<Renderer>();
         myRender.material.color = red ? Color.red : Color.blue;
-        life = UnityEngine.Random.Range(1, 100);
+        life = UnityEngine.Random.Range(1, 60);
     }
 
     protected virtual void Start () {
@@ -42,6 +55,8 @@ public class Enemy : MonoBehaviour, IUpdateble
 
     protected virtual void LineOfSight()
     {
+        if (!canMove) return;
+
         _distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
         if (_distanceToTarget > viewDistance)
@@ -74,6 +89,8 @@ public class Enemy : MonoBehaviour, IUpdateble
     }
     protected virtual void FollowPlayer()
     {
+        if (!canMove) return;
+
         if (!_playerInSight) return;
 
         float velY = _rb.velocity.y;

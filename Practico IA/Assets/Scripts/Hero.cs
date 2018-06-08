@@ -13,6 +13,7 @@ public class Hero : MonoBehaviour, IUpdateble
     Rigidbody _rb;
 
     public Queries querie;
+    public HeroQueriesActions qActions;
 
     public Transform spawnBullets;
 
@@ -219,6 +220,8 @@ public class Hero : MonoBehaviour, IUpdateble
             {
                 particles_JumpFall.Play();
                 isJumpFall = false;
+
+                qActions.Button_JumpKill();
             }
 
             if (!check.IsGrounded) moveFall.y -= gravity * 3;
@@ -310,11 +313,21 @@ public class Hero : MonoBehaviour, IUpdateble
     //////////////////////////////////////////////////////
     // FOR UPDATE QUERIES
     //////////////////////////////////////////////////////
+
+    //IA2-P1 (Select, Where)
     void UpdateQueries()
     {
         var gridEntities = querie.Query()
             .Where(x => x.gameObject.GetComponent<Enemy>() != null)
             .Select(x => x.GetComponent<Enemy>()).ToList();
+
         Deb_Queries = gridEntities.Count;
+    }
+
+    public IEnumerable<Enemy> GetCurrentEnemies()
+    {
+        return querie.Query()
+            .Where(x => x.gameObject.GetComponent<Enemy>() != null)
+            .Select(x => x.GetComponent<Enemy>()).ToList();
     }
 }
