@@ -3058,11 +3058,11 @@ RectTransform:
   m_Father: {fileID: 402886460}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -259.3, y: -42.92}
-  m_SizeDelta: {x: 183.73, y: 30.42}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 10, y: -36.25}
+  m_SizeDelta: {x: 239.34, y: 36.85}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &228990228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3084,10 +3084,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 8
     m_MaxSize: 40
     m_Alignment: 0
     m_AlignByGeometry: 0
@@ -3095,7 +3095,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Jump + Crouch = JumpKill
+  m_Text: '-Jump(space) + Crouch(c) = JumpKill
+
+    -Beam "o"'
 --- !u!222 &228990229
 CanvasRenderer:
   m_ObjectHideFlags: 0
