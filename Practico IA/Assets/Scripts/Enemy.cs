@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 {
 
     [Header ("For Line of Sight")]
-    public GameObject target;
+    GameObject target;
     public float viewDistance;
     public float viewAngle;
 
@@ -23,7 +23,8 @@ public class Enemy : MonoBehaviour, IUpdateble
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
-    public Renderer myRender;
+    Renderer myRender;
+    public Renderer Render { get { return myRender; } }
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
     bool canMove = true;
@@ -38,6 +39,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _rb = GetComponent<Rigidbody>();
         myRender = GetComponent<Renderer>();
+        target = FindObjectOfType<Hero>().gameObject;
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
