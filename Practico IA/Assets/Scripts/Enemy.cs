@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     public float viewDistance;
     public float viewAngle;
     public float rotationSpeed;
+    public float feedbackHit;
 
     public bool DrawGizmos;
 
@@ -44,6 +45,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     public void TakeDamage(int damage)
     {
         life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
 
     bool canMove = true;
