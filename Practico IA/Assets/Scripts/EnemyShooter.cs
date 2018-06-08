@@ -30,9 +30,9 @@ public class EnemyShooter : Enemy
     {
         base.FollowPlayer();
     }
-    protected override void LineOfSight()
+    protected override bool LineOfSight()
     {
-        base.LineOfSight();
+        return base.LineOfSight();
     }
     protected override void OnDrawGizmos()
     {

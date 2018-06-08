@@ -20,6 +20,8 @@ public static class CommonState
     public const string PURSUIRT = "Pursuit";
     public const string SEARCHING = "OutOfSight";
     public const string ATTACKING = "Attacking";
+
+    public const string FREEZE = "Freeze";
 }
 
 public static class PHYSICAL_INPUT

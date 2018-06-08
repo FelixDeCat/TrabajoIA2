@@ -43,7 +43,11 @@ public class Enemy : MonoBehaviour, IUpdateble
         StartUpdating();
         StateMachine();
     }
-    public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, DIE }
+
+
+
+
+    public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
     void StateMachine()
     {
@@ -55,6 +59,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         var pursuit = new State<PlayerInputs>(CommonState.PURSUIRT);
         var searching = new State<PlayerInputs>(CommonState.SEARCHING);
         var attack = new State<PlayerInputs>(CommonState.ATTACKING);
+        var freeze = new State<PlayerInputs>(CommonState.FREEZE);
         var die = new State<PlayerInputs>(CommonState.DIE);
 
         StateConfigurer.Create(idle)
@@ -85,6 +90,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateConfigurer.Create(attack)
             .SetTransition(PlayerInputs.OUT_RANGE_TO_ATTACK, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(freeze)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
@@ -119,12 +128,13 @@ public class Enemy : MonoBehaviour, IUpdateble
     }
 
 
-    protected virtual void LineOfSight() {
-        if (!canMove) return;
+    protected virtual bool LineOfSight() {
+        //si no me puedo mover... al pedo calcular lo demas
+        if (!canMove) return false;
+
         _distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
         if (_distanceToTarget > viewDistance) {
-            _playerInSight = false;
-            return;
+            return false;
         }
         _directionToTarget = (target.transform.position - transform.position).normalized;
         _angleToTarget = Vector3.Angle(transform.forward, _directionToTarget);
@@ -135,9 +145,9 @@ public class Enemy : MonoBehaviour, IUpdateble
             if (Physics.Raycast(transform.position, _directionToTarget, out raycastInfo, _distanceToTarget))
                 if (raycastInfo.collider.gameObject.layer == Layers.WORLD)
                     obstaclesBetween = true;
-            _playerInSight = !obstaclesBetween ? true : false;
+            return !obstaclesBetween ? true : false;
         }
-        else _playerInSight = false;
+        else return false;
     }
     protected virtual void FollowPlayer()
     {
@@ -198,7 +208,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     public virtual void OnUpdate()
     {
         _myFsm.Update();
-        LineOfSight();
+        //LineOfSight();
         FollowPlayer();
         if (life <= 0) Death();
     }
