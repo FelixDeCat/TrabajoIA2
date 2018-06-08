@@ -35,15 +35,19 @@ public class Beam : MonoBehaviour
 
         int[] amount = new int[100];
         int currentValue = 0;
-
-        foreach (var item in amount)
-        {
-            amount[item] = currentValue;
+        for (int i = 0; i < amount.Length; i++) {
+            amount[i] = currentValue;
             currentValue++;
         }
 
         // ROMPE, POR ESO COMENTADO
         // zipeo los nombres de cada enemigo golpeado por el raycast, con un numero de identificacion para mostrarlo en consola
-        // Debug.Log(raycastInfo.Where(x => x.collider.gameObject.layer == Layers.ENEMY).Select(x => x.collider.GetComponent<Enemy>()).Zip(amount, (x, y) => x.name + " es el enemigo hitteado numero " + y.ToString()));
+
+        var asd = raycastInfo
+            .Where(x => x.collider.GetComponent<Enemy>() != null)
+            .Select(x => x.collider.GetComponent<Enemy>().gameObject.name)
+            .Zip(amount, (x, y) => " es el enemigo hitteado numero " + y.ToString());
+
+        asd.ToList().ForEach(x => Debug.Log(x));
     }
 }
