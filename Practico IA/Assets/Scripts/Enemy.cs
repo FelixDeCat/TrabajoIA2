@@ -7,61 +7,39 @@ using IA2;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
-    
 
-    public GameObject target;
+    [Header ("For Line of Sight")]
+    GameObject target;
     public float viewDistance;
     public float viewAngle;
-    public float rotationSpeed;
+
+    [Header ("For Eject")]
     public float feedbackHit;
 
+    [Header ("Show Gizmos")]
     public bool DrawGizmos;
 
-    [Space(10)]
     int life; public int Life { get { return life; } }
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
-    public Renderer myRender;
+    Renderer myRender;
+    public Renderer Render { get { return myRender; } }
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-    public void Scare()
-    {
-        myRender.material.color = Color.grey;
-        canMove = false;
-    }
-
-    public void Death()
-    {
-        if (myRender.material.color == Color.black) return;
-
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        life -= damage;
-        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
-    }
-
     bool canMove = true;
-    private Rigidbody _rb;
-    private Vector3 _directionToTarget;
-    private float _angleToTarget;
-    private float _distanceToTarget;
-    private bool _playerInSight;
+    Rigidbody _rb;
+    Vector3 _directionToTarget;
+    public float rotationSpeed;
+    float _angleToTarget;
+    float _distanceToTarget;
+    bool _playerInSight;
 
     protected virtual void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         myRender = GetComponent<Renderer>();
+        target = FindObjectOfType<Hero>().gameObject;
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
@@ -71,8 +49,28 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateMachine();
     }
 
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+    public void Death()
+    {
+        if (myRender.material.color == Color.black) return;
 
-
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+    public void TakeDamage(int damage)
+    {
+        life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+    }
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
@@ -91,14 +89,12 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
-            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
         StateConfigurer.Create(onSigth)
             .SetTransition(PlayerInputs.PROBOCATED, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
-            .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
@@ -110,7 +106,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(searching)
             .SetTransition(PlayerInputs.TIME_OUT, idle)
-            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
+            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, pursuit)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
@@ -126,7 +122,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(die).Done();
 
-        
+
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
         #endregion
@@ -135,7 +131,48 @@ public class Enemy : MonoBehaviour, IUpdateble
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
 
+        //******************
+        //*** IDLE
+        //******************
+        idle.OnUpdate += () => {
+            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
+        };
 
+        //******************
+        //*** ON SIGHT
+        //******************
+        onSigth.OnUpdate += () => {
+            if (LineOfSight()) OnSight_CountDownForProbocate();
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
+
+        //******************
+        //*** PURSUIT
+        //******************
+        pursuit.OnUpdate += () => {
+            if (LineOfSight())
+            {
+                if (IsInDistanceToAttack())
+                {
+                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
+                }
+            }
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
+
+        //******************
+        //*** SEARCH
+        //******************
+        searching.OnUpdate += () => {
+            if (LineOfSight())
+            {
+                if (IsInDistanceToAttack())
+                {
+                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
+                }
+            }
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
 
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
@@ -144,6 +181,28 @@ public class Enemy : MonoBehaviour, IUpdateble
         _myFsm = new EventFSM<PlayerInputs>(idle);
     }
 
+    [Header ("For Probocate")]
+    public float Time_to_Probocate = 5f;
+    float timer_to_probocate;
+    void OnSight_CountDownForProbocate() {
+        if (timer_to_probocate < Time_to_Probocate) timer_to_probocate = timer_to_probocate + 1 * Time.deltaTime;
+        else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.PROBOCATED); }
+    }
+
+    [Header("For Distance To Attack")]
+    public float minDisToAttack = 5f;
+    bool IsInDistanceToAttack()
+    {
+        return Vector3.Distance(transform.position, target.transform.position) < minDisToAttack;
+    }
+
+    public float Time_to_ignore = 5f;
+    float timer_to_ignore;
+    void OutSight_CountDownForIgnore()
+    {
+        if (timer_to_ignore < Time_to_ignore) timer_to_ignore = timer_to_ignore + 1 * Time.deltaTime;
+        else { timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
+    }
 
     private void SendInputToFSM(PlayerInputs inp)
     {
@@ -153,7 +212,6 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _myFsm.FixedUpdate();
     }
-
 
     protected virtual bool LineOfSight() {
         //si no me puedo mover... al pedo calcular lo demas
@@ -214,7 +272,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _myFsm.Update();
         //LineOfSight();
-        FollowPlayer();
+        //FollowPlayer();
         if (life <= 0) Death();
     }
 }

@@ -90,7 +90,7 @@ public class HeroQueriesActions : MonoBehaviour {
                     .Concat(entities
                     .Where(x => x.gameObject.GetComponent<Enemy>() != null)
                     .Select(x => x.GetComponent<Enemy>())
-                    .Where(x => x.myRender.material.color == Color.black))
+                    .Where(x => x.Render.material.color == Color.black))
                     .OrderBy(x => x.Life)
                     .TakeWhile(x => x.Life < 10)
                     .ToList()
