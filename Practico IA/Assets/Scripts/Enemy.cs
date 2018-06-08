@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 
     
 
-    int life; public int Life { get { return life; } }
+    float life; public float Life { get { return life; } }
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
@@ -36,7 +36,32 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateMachine();
     }
 
+<<<<<<< HEAD
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+    public void Death()
+    {
+        if (myRender.material.color == Color.black) return;
+
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+    public void TakeDamage(float damage)
+    {
+        life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+    }
+=======
     
+>>>>>>> 4b0776a489117d766b21796a27d371f1a136bde6
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
