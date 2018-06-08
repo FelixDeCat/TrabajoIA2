@@ -124,6 +124,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  viewDistance: 20
-  viewAngle: 110
-  rotationSpeed: 5
+  viewDistance: 200
+  viewAngle: 360
+  rotationSpeed: 20
+  DrawGizmos: 0
+  myRender: {fileID: 0}

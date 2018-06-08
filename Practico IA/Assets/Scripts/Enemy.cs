@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
-    Renderer myRender;
+    public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
     public void Scare()
@@ -29,8 +29,21 @@ public class Enemy : MonoBehaviour, IUpdateble
 
     public void Death()
     {
+        if (myRender.material.color == Color.black) return;
+
         myRender.material.color = Color.black;
         transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        life -= damage;
     }
 
     bool canMove = true;
@@ -128,5 +141,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         LineOfSight();
         FollowPlayer();
+
+        if (life <= 0) Death();
     }
 }

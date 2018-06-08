@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb177321ea38b5646975f359c6399973, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.2
+  speed: 1
   lifeSpan: 2
   spawner: {fileID: 1498797586830506, guid: 68bef2093732ff1449f818825f5e8ee8, type: 2}
 --- !u!198 &198696991764576582

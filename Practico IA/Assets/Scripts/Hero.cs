@@ -222,6 +222,7 @@ public class Hero : MonoBehaviour, IUpdateble
                 isJumpFall = false;
 
                 qActions.Button_JumpKill();
+                qActions.EjectWeakAndScared();
             }
 
             if (!check.IsGrounded) moveFall.y -= gravity * 3;

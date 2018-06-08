@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class Layers
 {
+    public static int ENEMY = 10;
     public static int WORLD = 11;
 }

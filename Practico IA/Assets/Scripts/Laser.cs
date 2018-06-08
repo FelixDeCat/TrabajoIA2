@@ -31,6 +31,11 @@ public class Laser : MonoBehaviour
         transform.forward = spawner.forward;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == Layers.ENEMY) other.GetComponent<Enemy>().TakeDamage(20);
+    }
+
     public void Dispose() {  }
 
     /// <summary> Funcion Static para que podamos acceder desde el LaserSpawner,y que se encarga de Activar el GameObject(en caso de serlo) y llama a su funcion inicial </summary>

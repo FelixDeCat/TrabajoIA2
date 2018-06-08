@@ -78,4 +78,23 @@ public class HeroQueriesActions : MonoBehaviour {
             .ToList()
             .ForEach(x => x.Scare());
     }
+
+    // IA 2 P1 (Concat, OrderBy, TakeWhile)
+
+    public void EjectWeakAndScared()
+    {
+        var entities = myQueries.Query();
+
+        entities.Where(x => x.gameObject.GetComponent<Enemy>() != null)
+                    .Select(x => x.GetComponent<Enemy>())
+                    .Where(x => x.Life < 25)
+                    .Concat(entities
+                    .Where(x => x.gameObject.GetComponent<Enemy>() != null)
+                    .Select(x => x.GetComponent<Enemy>())
+                    .Where(x => x.myRender.material.color == Color.black))
+                    .OrderBy(x => x.Life)
+                    .TakeWhile(x => x.Life < 10)
+                    .ToList()
+                    .ForEach(x => x.Eject());
+    }
 }
