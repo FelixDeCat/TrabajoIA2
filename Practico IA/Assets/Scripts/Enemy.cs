@@ -34,13 +34,13 @@ public class Enemy : MonoBehaviour, IUpdateble
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
+
     protected virtual void Start()
     {
         StartUpdating();
         StateMachine();
     }
 
-<<<<<<< HEAD
     public void Scare()
     {
         myRender.material.color = Color.grey;
@@ -63,9 +63,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
-=======
-    
->>>>>>> 4b0776a489117d766b21796a27d371f1a136bde6
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
@@ -285,18 +282,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         Debug.Log( "I'm attacking you (" + target.name + ")");
     }
 
-    public void Scare()
-    {
-        SendInputToFSM(PlayerInputs.FREEZE);
-    }
-    public void Death()
-    {
-        SendInputToFSM(PlayerInputs.DIE);
-    }
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
+   
     public void TakeDamage(int damage)
     {
         life -= damage;
