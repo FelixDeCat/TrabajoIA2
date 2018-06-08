@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     [Header ("Show Gizmos")]
     public bool DrawGizmos;
 
-    int life; public int Life { get { return life; } }
+    float life; public float Life { get { return life; } }
     bool red, green;
     public bool IsRed { get { return red; } }
     public bool IsGreen { get { return green; } }
@@ -66,7 +66,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _rb.AddExplosionForce(5000, transform.position, 1);
     }
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
