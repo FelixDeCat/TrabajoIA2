@@ -7,7 +7,7 @@ using System.Linq;
 //IA2-P1
 public class HeroQueriesActions : MonoBehaviour {
 
-    public Queries myQueries;
+    Queries myQueries;
 
     private void Awake()
     {
@@ -79,8 +79,7 @@ public class HeroQueriesActions : MonoBehaviour {
             .ForEach(x => x.Scare());
     }
 
-    // IA 2 P1 (Concat, OrderBy, TakeWhile)
-
+    // IA2-P1 (Concat, OrderBy, TakeWhile)
     public void EjectWeakAndScared()
     {
         var entities = myQueries.Query();

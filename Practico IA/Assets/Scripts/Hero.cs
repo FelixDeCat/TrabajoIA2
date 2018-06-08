@@ -12,8 +12,8 @@ public class Hero : MonoBehaviour, IUpdateble
     public float cameraSpeedRotation;
     Rigidbody _rb;
 
-    public Queries querie;
-    public HeroQueriesActions qActions;
+    Queries querie;
+    HeroQueriesActions qActions;
 
     public Transform spawnBullets;
 
@@ -42,6 +42,8 @@ public class Hero : MonoBehaviour, IUpdateble
 
         querie = GetComponent<Queries>();
         querie.isBox = false;
+
+        qActions = GetComponent<HeroQueriesActions>();
 
         StateMachine();
     }
@@ -161,8 +163,6 @@ public class Hero : MonoBehaviour, IUpdateble
         };
         jumping.OnFixedUpdate += () =>
         {
-            Debug.Log(GoToJump + "--" + check.IsGrounded);
-
             if (GoToJump && check.IsGrounded)// aca salto
             {
                 moveFall.y = jumpForce;
@@ -171,9 +171,9 @@ public class Hero : MonoBehaviour, IUpdateble
             else if (!GoToJump && check.IsGrounded)//aca no salto mas y toque el piso
             {
                 moveFall.y = 0;
-                if (Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
+                if (Input.GetAxis(PHYSICAL_INPUT.HORIZONTAL) == 0 && Input.GetAxis(PHYSICAL_INPUT.VERTICAL) == 0)
                     SendInputToFSM(PlayerInputs.IDLE);
-                else if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+                else if (Input.GetAxis(PHYSICAL_INPUT.HORIZONTAL) != 0 || Input.GetAxis(PHYSICAL_INPUT.VERTICAL) != 0)
                     SendInputToFSM(PlayerInputs.MOVE);
             }
             else// la caida
@@ -228,8 +228,8 @@ public class Hero : MonoBehaviour, IUpdateble
             if (!check.IsGrounded) moveFall.y -= gravity * 3;
             else
             {
-                movevertical = transform.forward * Input.GetAxis("Vertical") * (speed / 2);
-                movehorizontal = transform.right * Input.GetAxis("Horizontal") * (speed / 2);
+                movevertical = transform.forward * Input.GetAxis(PHYSICAL_INPUT.VERTICAL) * (speed / 2);
+                movehorizontal = transform.right * Input.GetAxis(PHYSICAL_INPUT.HORIZONTAL) * (speed / 2);
             }
         };
         // </CROUCH>
@@ -249,17 +249,12 @@ public class Hero : MonoBehaviour, IUpdateble
     public void OnUpdate()
     {
         _myFsm.Update();
-        UpdateQueries();
         RotatePlayerWithCamera();
     }
     private void FixedUpdate()
     {
         _myFsm.FixedUpdate();
         ConstantVelocity();
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-        //SendInputToFSM(PlayerInputs.IDLE);
     }
 
     //////////////////////////////////////////////////////
@@ -304,7 +299,7 @@ public class Hero : MonoBehaviour, IUpdateble
 
     [Header("Solo para debug")]
     [SerializeField]
-    Text deb_Estado; string Deb_Est { set { deb_Estado.text = value; Debug.Log("ESTADO: " + value); } }
+    Text deb_Estado; string Deb_Est { set { deb_Estado.text = value; } }
     [SerializeField]
     Text deb_Trans; string Deb_Trans { set { deb_Trans.text = value; } }
     [SerializeField]
@@ -316,15 +311,6 @@ public class Hero : MonoBehaviour, IUpdateble
     //////////////////////////////////////////////////////
 
     //IA2-P1 (Select, Where)
-    void UpdateQueries()
-    {
-        var gridEntities = querie.Query()
-            .Where(x => x.gameObject.GetComponent<Enemy>() != null)
-            .Select(x => x.GetComponent<Enemy>()).ToList();
-
-        Deb_Queries = gridEntities.Count;
-    }
-
     public IEnumerable<Enemy> GetCurrentEnemies()
     {
         return querie.Query()
