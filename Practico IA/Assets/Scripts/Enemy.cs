@@ -7,10 +7,21 @@ using IA2;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
+<<<<<<< HEAD
     [Header ("For Eject")]
     public float feedbackHit;
 
     
+=======
+
+    
+
+    [Header ("For Eject")]
+    public float feedbackHit;
+
+    [Header ("Show Gizmos")]
+    public bool DrawGizmos;
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
 
     float life; public float Life { get { return life; } }
     bool red, green;
@@ -30,12 +41,42 @@ public class Enemy : MonoBehaviour, IUpdateble
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     protected virtual void Start()
     {
         StartUpdating();
         StateMachine();
     }
 
+<<<<<<< HEAD
+=======
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+    public void Death()
+    {
+        if (myRender.material.color == Color.black) return;
+
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+    public void TakeDamage(float damage)
+    {
+        life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+    }
+
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
     void StateMachine()
@@ -104,17 +145,24 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** IDLE
         //******************
         idle.OnUpdate += () => {
+<<<<<<< HEAD
             Deb_Estado = "IDLE";
             if (LineOfSight()) {
                 Debug.Log("Line of sigth");
                 SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT); }
+=======
+            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
         };
 
         //******************
         //*** ON SIGHT
         //******************
         onSigth.OnUpdate += () => {
+<<<<<<< HEAD
             Deb_Estado = "ON SIGTH";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             if (LineOfSight()) OnSight_CountDownForProbocate();
             else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
         };
@@ -123,7 +171,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** PURSUIT
         //******************
         pursuit.OnUpdate += () => {
+<<<<<<< HEAD
             Deb_Estado = "PURSUIT";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             if (LineOfSight())
             {
                 FollowPlayer();
@@ -140,7 +191,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** SEARCH
         //******************
         searching.OnUpdate += () => {
+<<<<<<< HEAD
             Deb_Estado = "SEARCH";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
             else {
                 OutSight_CountDownForIgnore();
@@ -151,7 +205,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** ATTACK
         //******************
         attack.OnUpdate += () => {
+<<<<<<< HEAD
             Deb_Estado = "ATTACK";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             if (LineOfSight()) {
                 if (IsInDistanceToAttack()) Attack();
                 else SendInputToFSM(PlayerInputs.OUT_RANGE_TO_ATTACK);
@@ -163,7 +220,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** FREEZE
         //******************
         freeze.OnEnter += x => {
+<<<<<<< HEAD
             Deb_Estado = "FREEZE";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             myRender.material.color = Color.grey;
             canMove = false;
         };
@@ -172,7 +232,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** DEATH
         //******************
         die.OnEnter += x => {
+<<<<<<< HEAD
             Deb_Estado = "DEATH";
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
             canMove = false;
             if (myRender.material.color == Color.black) return;
             myRender.material.color = Color.black;
@@ -251,6 +314,11 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         if (!canMove) return;
 
+<<<<<<< HEAD
+=======
+        if (!_playerInSight) return;
+
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
         float velY = _rb.velocity.y;
         _rb.velocity = new Vector3(_directionToTarget.x, _directionToTarget.y + velY, _directionToTarget.z);
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
@@ -261,6 +329,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         Debug.Log( "I'm attacking you (" + target.name + ")");
     }
 
+<<<<<<< HEAD
     public void Scare()
     {
         myRender.material.color = Color.grey;
@@ -279,6 +348,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         _rb.AddExplosionForce(5000, transform.position, 1);
     }
     public void TakeDamage(float damage)
+=======
+   
+    public void TakeDamage(int damage)
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     {
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
@@ -296,6 +369,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
+<<<<<<< HEAD
 
     
     public virtual void OnUpdate()
@@ -310,12 +384,17 @@ public class Enemy : MonoBehaviour, IUpdateble
     [Header("Gizmos & Feedback")]
     public bool DrawGizmos;
     [SerializeField] TextMesh debug_estado; public object Deb_Estado { set { debug_estado.text = value.ToString(); } }
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
     protected virtual void OnDrawGizmos()
     {
         if (!DrawGizmos) return;
 
+<<<<<<< HEAD
         target = FindObjectOfType<Hero>().gameObject;
 
+=======
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
         if (_playerInSight)
             Gizmos.color = Color.green;
         else
@@ -334,4 +413,14 @@ public class Enemy : MonoBehaviour, IUpdateble
         Vector3 leftLimit = Quaternion.AngleAxis(-viewAngle, transform.up) * transform.forward;
         Gizmos.DrawLine(transform.position, transform.position + (leftLimit * viewDistance));
     }
+<<<<<<< HEAD
+=======
+    public virtual void OnUpdate()
+    {
+        _myFsm.Update();
+        //LineOfSight();
+        //FollowPlayer();
+        if (life <= 0) Death();
+    }
+>>>>>>> 63f040ba2e950b7a61c9bcd16b275780ae6cce20
 }
