@@ -8,17 +8,17 @@ using IA2;
 public class Enemy : MonoBehaviour, IUpdateble
 {
 
+    [Header ("For Line of Sight")]
     public GameObject target;
     public float viewDistance;
     public float viewAngle;
-    public float rotationSpeed;
 
+    [Header ("For Eject")]
     public float feedbackHit;
 
     [Header ("Show Gizmos")]
     public bool DrawGizmos;
 
-    [Space(10)]
     int life; public int Life { get { return life; } }
     bool red, green;
     public bool IsRed { get { return red; } }
@@ -26,14 +26,13 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-    
-
     bool canMove = true;
-    private Rigidbody _rb;
-    private Vector3 _directionToTarget;
-    private float _angleToTarget;
-    private float _distanceToTarget;
-    private bool _playerInSight;
+    Rigidbody _rb;
+    Vector3 _directionToTarget;
+    public float rotationSpeed;
+    float _angleToTarget;
+    float _distanceToTarget;
+    bool _playerInSight;
 
     protected virtual void Awake()
     {
@@ -53,7 +52,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         myRender.material.color = Color.grey;
         canMove = false;
     }
-
     public void Death()
     {
         if (myRender.material.color == Color.black) return;
@@ -62,18 +60,15 @@ public class Enemy : MonoBehaviour, IUpdateble
         transform.localScale = transform.localScale / 2;
         StopUpdating();
     }
-
     public void Eject()
     {
         _rb.AddExplosionForce(5000, transform.position, 1);
     }
-
     public void TakeDamage(int damage)
     {
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
-
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
