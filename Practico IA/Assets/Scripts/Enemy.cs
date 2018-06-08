@@ -25,7 +25,6 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-<<<<<<< HEAD
     public void Scare()
     {
         myRender.material.color = Color.grey;
@@ -52,8 +51,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
 
-=======
->>>>>>> 12faa0a1f588a27806fff165ea6f269f5078de4a
     bool canMove = true;
     private Rigidbody _rb;
     private Vector3 _directionToTarget;
@@ -188,28 +185,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         float velY = _rb.velocity.y;
         _rb.velocity = new Vector3(_directionToTarget.x, _directionToTarget.y + velY, _directionToTarget.z);
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
-    }
-
-    public void Scare()
-    {
-        myRender.material.color = Color.grey;
-        canMove = false;
-    }
-    public void Death()
-    {
-        if (myRender.material.color == Color.black) return;
-
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
-    public void TakeDamage(int damage)
-    {
-        life -= damage;
     }
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
