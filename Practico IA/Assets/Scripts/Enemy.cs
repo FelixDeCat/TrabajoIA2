@@ -8,10 +8,7 @@ using IA2;
 public class Enemy : MonoBehaviour, IUpdateble
 {
 
-    [Header ("For Line of Sight")]
-    GameObject target;
-    public float viewDistance;
-    public float viewAngle;
+    
 
     [Header ("For Eject")]
     public float feedbackHit;
@@ -27,13 +24,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer Render { get { return myRender; } }
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-    bool canMove = true;
-    Rigidbody _rb;
-    Vector3 _directionToTarget;
-    public float rotationSpeed;
-    float _angleToTarget;
-    float _distanceToTarget;
-    bool _playerInSight;
+    
 
     protected virtual void Awake()
     {
@@ -49,28 +40,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateMachine();
     }
 
-    public void Scare()
-    {
-        myRender.material.color = Color.grey;
-        canMove = false;
-    }
-    public void Death()
-    {
-        if (myRender.material.color == Color.black) return;
-
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
-    public void TakeDamage(int damage)
-    {
-        life -= damage;
-        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
-    }
+    
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
@@ -90,30 +60,35 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateConfigurer.Create(idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
             .SetTransition(PlayerInputs.DIE, die)
+            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(onSigth)
             .SetTransition(PlayerInputs.PROBOCATED, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
+            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
             .SetTransition(PlayerInputs.DIE, die)
+            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(searching)
             .SetTransition(PlayerInputs.TIME_OUT, idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, pursuit)
             .SetTransition(PlayerInputs.DIE, die)
+            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(attack)
             .SetTransition(PlayerInputs.OUT_RANGE_TO_ATTACK, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
+            .SetTransition(PlayerInputs.FREEZE, freeze)
             .Done();
 
         StateConfigurer.Create(freeze)
@@ -152,6 +127,8 @@ public class Enemy : MonoBehaviour, IUpdateble
         pursuit.OnUpdate += () => {
             if (LineOfSight())
             {
+                FollowPlayer();
+
                 if (IsInDistanceToAttack())
                 {
                     SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
@@ -164,14 +141,40 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** SEARCH
         //******************
         searching.OnUpdate += () => {
-            if (LineOfSight())
-            {
-                if (IsInDistanceToAttack())
-                {
-                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
-                }
+            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
+            else {
+                OutSight_CountDownForIgnore();
             }
-            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
+
+        //******************
+        //*** ATTACK
+        //******************
+        attack.OnUpdate += () => {
+            if (LineOfSight()) {
+                if (IsInDistanceToAttack()) Attack();
+                else SendInputToFSM(PlayerInputs.OUT_RANGE_TO_ATTACK);
+            }
+            else SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT);
+        };
+
+        //******************
+        //*** FREEZE
+        //******************
+        freeze.OnEnter += x => {
+            myRender.material.color = Color.grey;
+            canMove = false;
+        };
+
+        //******************
+        //*** DEATH
+        //******************
+        die.OnEnter += x => {
+            canMove = false;
+            if (myRender.material.color == Color.black) return;
+            myRender.material.color = Color.black;
+            transform.localScale = transform.localScale / 2;
+            StopUpdating();
         };
 
         ///////////////////////////////////////////////////////////////
@@ -196,29 +199,27 @@ public class Enemy : MonoBehaviour, IUpdateble
         return Vector3.Distance(transform.position, target.transform.position) < minDisToAttack;
     }
 
-    public float Time_to_ignore = 5f;
-    float timer_to_ignore;
+    [Header ("For Ignore in Time Out")]
+    public float TimeToIgnore = 5f;
+    float _timer_to_ignore;
     void OutSight_CountDownForIgnore()
     {
-        if (timer_to_ignore < Time_to_ignore) timer_to_ignore = timer_to_ignore + 1 * Time.deltaTime;
-        else { timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
+        if (_timer_to_ignore < TimeToIgnore) _timer_to_ignore = _timer_to_ignore + 1 * Time.deltaTime;
+        else { _timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
     }
-
-    private void SendInputToFSM(PlayerInputs inp)
+    
+    [Header("For Line of Sight")]
+    public float viewDistance;
+    public float viewAngle;
+    GameObject target;
+    protected virtual bool LineOfSight()
     {
-        _myFsm.SendInput(inp);
-    }
-    private void FixedUpdate()
-    {
-        _myFsm.FixedUpdate();
-    }
-
-    protected virtual bool LineOfSight() {
         //si no me puedo mover... al pedo calcular lo demas
         if (!canMove) return false;
 
         _distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-        if (_distanceToTarget > viewDistance) {
+        if (_distanceToTarget > viewDistance)
+        {
             return false;
         }
         _directionToTarget = (target.transform.position - transform.position).normalized;
@@ -234,6 +235,15 @@ public class Enemy : MonoBehaviour, IUpdateble
         }
         else return false;
     }
+
+    [Header("For Pursuit")]
+    public float rotationSpeed;
+    bool canMove = true;
+    Rigidbody _rb;
+    Vector3 _directionToTarget;
+    float _angleToTarget;
+    float _distanceToTarget;
+    bool _playerInSight;
     protected virtual void FollowPlayer()
     {
         if (!canMove) return;
@@ -244,6 +254,40 @@ public class Enemy : MonoBehaviour, IUpdateble
         _rb.velocity = new Vector3(_directionToTarget.x, _directionToTarget.y + velY, _directionToTarget.z);
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
     }
+
+    void Attack()
+    {
+        Debug.Log( "I'm attacking you (" + target.name + ")");
+    }
+
+    public void Scare()
+    {
+        SendInputToFSM(PlayerInputs.FREEZE);
+    }
+    public void Death()
+    {
+        SendInputToFSM(PlayerInputs.DIE);
+    }
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+    public void TakeDamage(int damage)
+    {
+        life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+    }
+
+    private void SendInputToFSM(PlayerInputs inp)
+    {
+        _myFsm.SendInput(inp);
+    }
+    private void FixedUpdate()
+    {
+        _myFsm.FixedUpdate();
+    }
+
+    
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
     protected virtual void OnDrawGizmos()
