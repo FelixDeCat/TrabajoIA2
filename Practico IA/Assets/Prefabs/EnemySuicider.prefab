@@ -136,10 +136,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d891db251a50524abc17f539b208b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  feedbackHit: 5
+  Time_to_Probocate: 5
+  minDisToAttack: 5
+  TimeToIgnore: 5
   viewDistance: 200
   viewAngle: 360
-  feedbackHit: 0
-  DrawGizmos: 0
-  myRender: {fileID: 0}
   rotationSpeed: 20
+  DrawGizmos: 0
+  debug_estado: {fileID: 0}
