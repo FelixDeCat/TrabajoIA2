@@ -7,14 +7,10 @@ using IA2;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
-
-    
-
     [Header ("For Eject")]
     public float feedbackHit;
 
-    [Header ("Show Gizmos")]
-    public bool DrawGizmos;
+    
 
     int life; public int Life { get { return life; } }
     bool red, green;
@@ -110,13 +106,17 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** IDLE
         //******************
         idle.OnUpdate += () => {
-            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
+            Deb_Estado = "IDLE";
+            if (LineOfSight()) {
+                Debug.Log("Line of sigth");
+                SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT); }
         };
 
         //******************
         //*** ON SIGHT
         //******************
         onSigth.OnUpdate += () => {
+            Deb_Estado = "ON SIGTH";
             if (LineOfSight()) OnSight_CountDownForProbocate();
             else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
         };
@@ -125,6 +125,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** PURSUIT
         //******************
         pursuit.OnUpdate += () => {
+            Deb_Estado = "PURSUIT";
             if (LineOfSight())
             {
                 FollowPlayer();
@@ -141,6 +142,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** SEARCH
         //******************
         searching.OnUpdate += () => {
+            Deb_Estado = "SEARCH";
             if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
             else {
                 OutSight_CountDownForIgnore();
@@ -151,6 +153,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** ATTACK
         //******************
         attack.OnUpdate += () => {
+            Deb_Estado = "ATTACK";
             if (LineOfSight()) {
                 if (IsInDistanceToAttack()) Attack();
                 else SendInputToFSM(PlayerInputs.OUT_RANGE_TO_ATTACK);
@@ -162,6 +165,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** FREEZE
         //******************
         freeze.OnEnter += x => {
+            Deb_Estado = "FREEZE";
             myRender.material.color = Color.grey;
             canMove = false;
         };
@@ -170,6 +174,7 @@ public class Enemy : MonoBehaviour, IUpdateble
         //*** DEATH
         //******************
         die.OnEnter += x => {
+            Deb_Estado = "DEATH";
             canMove = false;
             if (myRender.material.color == Color.black) return;
             myRender.material.color = Color.black;
@@ -248,8 +253,6 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         if (!canMove) return;
 
-        if (!_playerInSight) return;
-
         float velY = _rb.velocity.y;
         _rb.velocity = new Vector3(_directionToTarget.x, _directionToTarget.y + velY, _directionToTarget.z);
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
@@ -290,9 +293,25 @@ public class Enemy : MonoBehaviour, IUpdateble
     
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
+
+    
+    public virtual void OnUpdate()
+    {
+        _myFsm.Update();
+        //LineOfSight();
+        //FollowPlayer();
+        if (life <= 0) Death();
+    }
+
+
+    [Header("Gizmos & Feedback")]
+    public bool DrawGizmos;
+    [SerializeField] TextMesh debug_estado; public object Deb_Estado { set { debug_estado.text = value.ToString(); } }
     protected virtual void OnDrawGizmos()
     {
         if (!DrawGizmos) return;
+
+        target = FindObjectOfType<Hero>().gameObject;
 
         if (_playerInSight)
             Gizmos.color = Color.green;
@@ -311,12 +330,5 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         Vector3 leftLimit = Quaternion.AngleAxis(-viewAngle, transform.up) * transform.forward;
         Gizmos.DrawLine(transform.position, transform.position + (leftLimit * viewDistance));
-    }
-    public virtual void OnUpdate()
-    {
-        _myFsm.Update();
-        //LineOfSight();
-        //FollowPlayer();
-        if (life <= 0) Death();
     }
 }
