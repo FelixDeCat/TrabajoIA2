@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+//IA2-P2
+//IA2-P1
 public class HeroQueriesActions : MonoBehaviour {
 
     public Queries myQueries;
