@@ -89,14 +89,12 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(idle)
             .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
-            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
         StateConfigurer.Create(onSigth)
             .SetTransition(PlayerInputs.PROBOCATED, pursuit)
             .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
-            .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
@@ -108,7 +106,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(searching)
             .SetTransition(PlayerInputs.TIME_OUT, idle)
-            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
+            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, pursuit)
             .SetTransition(PlayerInputs.DIE, die)
             .Done();
 
@@ -124,7 +122,7 @@ public class Enemy : MonoBehaviour, IUpdateble
 
         StateConfigurer.Create(die).Done();
 
-        
+
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
         #endregion
@@ -133,7 +131,48 @@ public class Enemy : MonoBehaviour, IUpdateble
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
 
+        //******************
+        //*** IDLE
+        //******************
+        idle.OnUpdate += () => {
+            if (LineOfSight()) SendInputToFSM(PlayerInputs.ON_LINE_OF_SIGHT);
+        };
 
+        //******************
+        //*** ON SIGHT
+        //******************
+        onSigth.OnUpdate += () => {
+            if (LineOfSight()) OnSight_CountDownForProbocate();
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
+
+        //******************
+        //*** PURSUIT
+        //******************
+        pursuit.OnUpdate += () => {
+            if (LineOfSight())
+            {
+                if (IsInDistanceToAttack())
+                {
+                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
+                }
+            }
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
+
+        //******************
+        //*** SEARCH
+        //******************
+        searching.OnUpdate += () => {
+            if (LineOfSight())
+            {
+                if (IsInDistanceToAttack())
+                {
+                    SendInputToFSM(PlayerInputs.IN_RANGE_TO_ATTACK);
+                }
+            }
+            else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.OUT_LINE_OF_SIGHT); }
+        };
 
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
@@ -142,6 +181,28 @@ public class Enemy : MonoBehaviour, IUpdateble
         _myFsm = new EventFSM<PlayerInputs>(idle);
     }
 
+    [Header ("For Probocate")]
+    public float Time_to_Probocate = 5f;
+    float timer_to_probocate;
+    void OnSight_CountDownForProbocate() {
+        if (timer_to_probocate < Time_to_Probocate) timer_to_probocate = timer_to_probocate + 1 * Time.deltaTime;
+        else { timer_to_probocate = 0; SendInputToFSM(PlayerInputs.PROBOCATED); }
+    }
+
+    [Header("For Distance To Attack")]
+    public float minDisToAttack = 5f;
+    bool IsInDistanceToAttack()
+    {
+        return Vector3.Distance(transform.position, target.transform.position) < minDisToAttack;
+    }
+
+    public float Time_to_ignore = 5f;
+    float timer_to_ignore;
+    void OutSight_CountDownForIgnore()
+    {
+        if (timer_to_ignore < Time_to_ignore) timer_to_ignore = timer_to_ignore + 1 * Time.deltaTime;
+        else { timer_to_ignore = 0; SendInputToFSM(PlayerInputs.TIME_OUT); }
+    }
 
     private void SendInputToFSM(PlayerInputs inp)
     {
@@ -151,7 +212,6 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _myFsm.FixedUpdate();
     }
-
 
     protected virtual bool LineOfSight() {
         //si no me puedo mover... al pedo calcular lo demas
@@ -212,7 +272,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _myFsm.Update();
         //LineOfSight();
-        FollowPlayer();
+        //FollowPlayer();
         if (life <= 0) Death();
     }
 }
