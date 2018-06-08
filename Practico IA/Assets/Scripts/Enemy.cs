@@ -7,14 +7,15 @@ using IA2;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
-    
 
     public GameObject target;
     public float viewDistance;
     public float viewAngle;
     public float rotationSpeed;
+
     public float feedbackHit;
 
+    [Header ("Show Gizmos")]
     public bool DrawGizmos;
 
     [Space(10)]
@@ -24,6 +25,28 @@ public class Enemy : MonoBehaviour, IUpdateble
     public bool IsGreen { get { return green; } }
     public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
+
+    
+
+    bool canMove = true;
+    private Rigidbody _rb;
+    private Vector3 _directionToTarget;
+    private float _angleToTarget;
+    private float _distanceToTarget;
+    private bool _playerInSight;
+
+    protected virtual void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+        myRender = GetComponent<Renderer>();
+        myRender.material.color = red ? Color.red : Color.blue;
+        life = UnityEngine.Random.Range(1, 60);
+    }
+    protected virtual void Start()
+    {
+        StartUpdating();
+        StateMachine();
+    }
 
     public void Scare()
     {
@@ -50,28 +73,6 @@ public class Enemy : MonoBehaviour, IUpdateble
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
-
-    bool canMove = true;
-    private Rigidbody _rb;
-    private Vector3 _directionToTarget;
-    private float _angleToTarget;
-    private float _distanceToTarget;
-    private bool _playerInSight;
-
-    protected virtual void Awake()
-    {
-        _rb = GetComponent<Rigidbody>();
-        myRender = GetComponent<Renderer>();
-        myRender.material.color = red ? Color.red : Color.blue;
-        life = UnityEngine.Random.Range(1, 60);
-    }
-    protected virtual void Start()
-    {
-        StartUpdating();
-        StateMachine();
-    }
-
-
 
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
