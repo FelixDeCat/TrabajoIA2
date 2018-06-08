@@ -36,23 +36,11 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateMachine();
     }
 
-
-<<<<<<< HEAD
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
     public void TakeDamage(float damage)
     {
         life -= damage;
         _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
     }
-=======
->>>>>>> 780e9321e5df7ac0050beaec874a3816c3c6ba8d
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
     private EventFSM<PlayerInputs> _myFsm;
