@@ -28,7 +28,7 @@ public class Beam : MonoBehaviour
                    .Aggregate(100f,
                    (acum, current) =>
                    {
-                       current.TakeDamage(acum);
+                       current.TakeDamage(acum, this.transform.forward);
                        acum = acum / 2;
                        return acum;
                    });

@@ -38,10 +38,10 @@ public class Enemy : MonoBehaviour, IUpdateble
         StateMachine();
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, Vector3 dir)
     {
         life -= damage;
-        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+        _rb.AddForce( dir * feedbackHit, ForceMode.Impulse);
     }
 
     public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, FREEZE, DIE }
@@ -286,10 +286,10 @@ public class Enemy : MonoBehaviour, IUpdateble
     {
         _rb.AddExplosionForce(5000, transform.position, 1);
     }
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 v3direccion)
     {
         life -= damage;
-        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+        _rb.AddForce(v3direccion * feedbackHit, ForceMode.Impulse);
     }
 
     private void SendInputToFSM(PlayerInputs inp)

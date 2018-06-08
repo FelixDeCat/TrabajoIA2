@@ -33,7 +33,7 @@ public class Laser : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == Layers.ENEMY) other.GetComponent<Enemy>().TakeDamage(20);
+        if (other.gameObject.layer == Layers.ENEMY) other.GetComponent<Enemy>().TakeDamage(20, this.transform.forward);
     }
 
     public void Dispose() {  }
