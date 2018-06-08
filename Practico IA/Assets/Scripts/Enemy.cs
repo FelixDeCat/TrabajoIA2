@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using IA2;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour, IUpdateble
 {
+    
+
     public GameObject target;
     public float viewDistance;
     public float viewAngle;
@@ -21,31 +24,6 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
-    public void Scare()
-    {
-        myRender.material.color = Color.grey;
-        canMove = false;
-    }
-
-    public void Death()
-    {
-        if (myRender.material.color == Color.black) return;
-
-        myRender.material.color = Color.black;
-        transform.localScale = transform.localScale / 2;
-        StopUpdating();
-    }
-
-    public void Eject()
-    {
-        _rb.AddExplosionForce(5000, transform.position, 1);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        life -= damage;
-    }
-
     bool canMove = true;
     private Rigidbody _rb;
     private Vector3 _directionToTarget;
@@ -60,45 +38,106 @@ public class Enemy : MonoBehaviour, IUpdateble
         myRender.material.color = red ? Color.red : Color.blue;
         life = UnityEngine.Random.Range(1, 60);
     }
-
-    protected virtual void Start () {
-        StartUpdating();
-    }
-	
-
-    protected virtual void LineOfSight()
+    protected virtual void Start()
     {
+        StartUpdating();
+        StateMachine();
+    }
+    public enum PlayerInputs { ON_LINE_OF_SIGHT, PROBOCATED, OUT_LINE_OF_SIGHT, TIME_OUT, IN_RANGE_TO_ATTACK, OUT_RANGE_TO_ATTACK, DIE }
+    private EventFSM<PlayerInputs> _myFsm;
+    void StateMachine()
+    {
+        #region STATE MACHINE CONFIGS
+        ///////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+        var idle = new State<PlayerInputs>(CommonState.IDLE);
+        var onSigth = new State<PlayerInputs>(CommonState.ONSIGHT);
+        var pursuit = new State<PlayerInputs>(CommonState.PURSUIRT);
+        var searching = new State<PlayerInputs>(CommonState.SEARCHING);
+        var attack = new State<PlayerInputs>(CommonState.ATTACKING);
+        var die = new State<PlayerInputs>(CommonState.DIE);
+
+        StateConfigurer.Create(idle)
+            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
+            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(onSigth)
+            .SetTransition(PlayerInputs.PROBOCATED, pursuit)
+            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
+            .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(pursuit)
+            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
+            .SetTransition(PlayerInputs.IN_RANGE_TO_ATTACK, attack)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(searching)
+            .SetTransition(PlayerInputs.TIME_OUT, idle)
+            .SetTransition(PlayerInputs.ON_LINE_OF_SIGHT, onSigth)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(attack)
+            .SetTransition(PlayerInputs.OUT_RANGE_TO_ATTACK, pursuit)
+            .SetTransition(PlayerInputs.OUT_LINE_OF_SIGHT, searching)
+            .SetTransition(PlayerInputs.DIE, die)
+            .Done();
+
+        StateConfigurer.Create(die).Done();
+
+        
+        ///////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+        #endregion
+
+        #region STATE MACHINE DO SOMETING
+        ///////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+
+
+
+        ///////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+        #endregion
+
+        _myFsm = new EventFSM<PlayerInputs>(idle);
+    }
+
+
+    private void SendInputToFSM(PlayerInputs inp)
+    {
+        _myFsm.SendInput(inp);
+    }
+    private void FixedUpdate()
+    {
+        _myFsm.FixedUpdate();
+    }
+
+
+    protected virtual void LineOfSight() {
         if (!canMove) return;
-
         _distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-
-        if (_distanceToTarget > viewDistance)
-        {
+        if (_distanceToTarget > viewDistance) {
             _playerInSight = false;
             return;
         }
-
         _directionToTarget = (target.transform.position - transform.position).normalized;
-
         _angleToTarget = Vector3.Angle(transform.forward, _directionToTarget);
-
         if (_angleToTarget <= viewAngle)
         {
             RaycastHit raycastInfo;
             bool obstaclesBetween = false;
-
             if (Physics.Raycast(transform.position, _directionToTarget, out raycastInfo, _distanceToTarget))
                 if (raycastInfo.collider.gameObject.layer == Layers.WORLD)
                     obstaclesBetween = true;
-
-
             _playerInSight = !obstaclesBetween ? true : false;
-
         }
-        else
-        {
-            _playerInSight = false;
-        }
+        else _playerInSight = false;
     }
     protected virtual void FollowPlayer()
     {
@@ -111,9 +150,29 @@ public class Enemy : MonoBehaviour, IUpdateble
         transform.forward = Vector3.Lerp(transform.forward, _directionToTarget, rotationSpeed * Time.deltaTime);
     }
 
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+    public void Death()
+    {
+        if (myRender.material.color == Color.black) return;
+
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+    public void TakeDamage(int damage)
+    {
+        life -= damage;
+    }
     public virtual void StartUpdating() { UpdateManager.AddObjectUpdateable(this); }
     public virtual void StopUpdating() { UpdateManager.RemoveObjectUpdateable(this); }
-
     protected virtual void OnDrawGizmos()
     {
         if (!DrawGizmos) return;
@@ -136,12 +195,11 @@ public class Enemy : MonoBehaviour, IUpdateble
         Vector3 leftLimit = Quaternion.AngleAxis(-viewAngle, transform.up) * transform.forward;
         Gizmos.DrawLine(transform.position, transform.position + (leftLimit * viewDistance));
     }
-
     public virtual void OnUpdate()
     {
+        _myFsm.Update();
         LineOfSight();
         FollowPlayer();
-
         if (life <= 0) Death();
     }
 }
