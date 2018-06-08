@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour, IUpdateble
     public float viewDistance;
     public float viewAngle;
     public float rotationSpeed;
+    public float feedbackHit;
 
     public bool DrawGizmos;
 
@@ -24,6 +25,35 @@ public class Enemy : MonoBehaviour, IUpdateble
     public Renderer myRender;
     public Color Color { set { myRender.material.color = value; if (value == Color.red) red = true; if (value == Color.green) green = true; } }
 
+<<<<<<< HEAD
+    public void Scare()
+    {
+        myRender.material.color = Color.grey;
+        canMove = false;
+    }
+
+    public void Death()
+    {
+        if (myRender.material.color == Color.black) return;
+
+        myRender.material.color = Color.black;
+        transform.localScale = transform.localScale / 2;
+        StopUpdating();
+    }
+
+    public void Eject()
+    {
+        _rb.AddExplosionForce(5000, transform.position, 1);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        life -= damage;
+        _rb.AddForce(-transform.forward * feedbackHit, ForceMode.Impulse);
+    }
+
+=======
+>>>>>>> 12faa0a1f588a27806fff165ea6f269f5078de4a
     bool canMove = true;
     private Rigidbody _rb;
     private Vector3 _directionToTarget;

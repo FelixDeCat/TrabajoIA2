@@ -127,5 +127,6 @@ MonoBehaviour:
   viewDistance: 200
   viewAngle: 360
   rotationSpeed: 20
+  feedbackHit: 30
   DrawGizmos: 0
   myRender: {fileID: 0}
