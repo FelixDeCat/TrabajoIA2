@@ -32,10 +32,14 @@ public class EnemyManager : MonoBehaviour {
     {
 
         //IA2 - P1(Select ToList)
+
+
+        // Primero Spawneo todos los Obstaculos
         obstaculos
             .Select(x => x.GetComponent<GridEntity>())
             .RandomizePositions(mySpatialGrid.width, mySpatialGrid.height, mySpatialGrid.cellWidth, mySpatialGrid.cellHeight);
 
+        //Les doy una forma
         obstaculos.ForEach(x =>
         {
             x.IsCroucheable = Random.Range(-1, 1) == 0;
@@ -44,8 +48,10 @@ public class EnemyManager : MonoBehaviour {
         }
         );
 
+        //Obtengo los transforms
         var transfObstacles = obstaculos.Select(x => x.transform);
 
+        //con esos transform como referencia spawneo los enemies, el "RandomizePositionsExcept" toma un parametro mas, que para que los enemies no spawaneen ahi
         enemigos
             .Select(x => x.GetComponent<GridEntity>())
             .RandomizePositionsExcept(mySpatialGrid.width, mySpatialGrid.height, mySpatialGrid.cellWidth, mySpatialGrid.cellHeight, transfObstacles);
@@ -68,7 +74,6 @@ public static class someextensions
         return col;
     }
 
-    //IA2-P1 (ToList, Foreach)
     public static IEnumerable<GridEntity> RandomizePositionsExcept(this IEnumerable<GridEntity> col, float width, float heigth, float cellWidth, float cellheigth, IEnumerable<Transform> transf)
     {
         col

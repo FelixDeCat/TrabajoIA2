@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 public static class CommonState
 {
     public const string IDLE = "Idle";
+
     public const string MOVING = "Moving";
     public const string JUMPING = "Jumping";
     public const string CROUCH = "Jumping";
@@ -17,8 +18,7 @@ public static class CommonState
 
     public const string ONSIGHT = "OnSight";
     public const string PURSUIRT = "Pursuit";
-    public const string OUT_OF_SIGHT = "OutOfSight";
-
+    public const string SEARCHING = "OutOfSight";
     public const string ATTACKING = "Attacking";
 }
 
